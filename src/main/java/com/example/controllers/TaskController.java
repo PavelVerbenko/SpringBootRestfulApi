@@ -2,7 +2,7 @@ package com.example.controllers;
 
 import com.example.models.Task;
 import com.example.services.TaskService;
-import dto.TaskDTO;
+import com.example.dto.TaskDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
