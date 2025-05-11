@@ -6,3 +6,23 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+  kafka:
+    consumer:
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.value.default.type: com.example.dto.TaskStatusUpdateDTO
+    bootstrap-servers: localhost:9092
+  mail:
+    host: smtp.yandex.ru
+    port: 465
+    username: ya.pasha.verbenko@yandex.ru
+    password: ${EMAIL_PASSWORD:bgdqyybfkmwiuokz}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
+          starttls:
+            enable: false
+          from: ya.pasha.verbenko@yandex.ru
