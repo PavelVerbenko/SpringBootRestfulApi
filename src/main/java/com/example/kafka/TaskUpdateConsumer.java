@@ -5,12 +5,10 @@ import com.example.services.NotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.kafka.listener.adapter.ConsumerRecordMetadata;
 import org.springframework.kafka.support.Acknowledgment;
-import org.springframework.kafka.support.KafkaHeaders;
-import org.springframework.messaging.handler.annotation.Header;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -18,38 +16,25 @@ import org.springframework.stereotype.Component;
 public class TaskUpdateConsumer {
     private final NotificationService notificationService;
 
-    @KafkaListener(topics = "task-updates", groupId = "task-group")
-    public void listen(TaskStatusUpdateDTO update, Acknowledgment ack) {
+    @KafkaListener(topics = "task-updates", groupId = "task-group", batch = "true")
+    public void listen(List<TaskStatusUpdateDTO> updates, Acknowledgment ack) {
         try {
-            log.info("Received task status update: {}", update);
-            String message = String.format(
-                    "Task ID: %d status changed from %s to %s (User ID: %d)",
-                    update.getTaskId(),
-                    update.getOldStatus(),
-                    update.getNewStatus(),
-                    update.getUserId()
-            );
-            notificationService.sendEmail("ya.pasha.verbenko@yandex.ru", "Task Status Update", message);
+            for (TaskStatusUpdateDTO update : updates) {
+                if (update == null) {
+                    log.warn("Received null message in batch");
+                    continue;
+                }
+                processUpdate(update);
+            }
             ack.acknowledge();
         } catch (Exception e) {
-            log.error("Error processing status update: {}", update, e);
+            log.error("Error processing batch: {}", e.getMessage());
         }
     }
 
-    @KafkaListener(topics = "task-updates", groupId = "task-group")
-    public void listen(
-            @Payload(required = false) TaskStatusUpdateDTO update,
-            @Header(KafkaHeaders.RECEIVED_KEY) String key,
-            Acknowledgment ack,
-            ConsumerRecordMetadata meta) {
-
-        if (update == null) {
-            log.warn("Received null message with key: {}", key);
-            return;
-        }
-
+    private void processUpdate(TaskStatusUpdateDTO update) {
         try {
-            log.info("Received task status update: {}", update);
+            log.info("Processing update: {}", update);
             String message = String.format(
                     "Task ID: %d status changed from %s to %s (User ID: %d)",
                     update.getTaskId(),
@@ -57,11 +42,11 @@ public class TaskUpdateConsumer {
                     update.getNewStatus(),
                     update.getUserId()
             );
-            notificationService.sendEmail("ya.pasha.verbenko@yandex.ru", "Task Status Update", message);
-            notificationService.sendEmail("admin@example.com", "Task Status Update", message);
-            ack.acknowledge();
+
+            notificationService.sendEmail("ya.pasha.verbenko@yandex.ru", "Task Update", message);
+            notificationService.sendEmail("admin@example.com", "Task Update", message);
         } catch (Exception e) {
-            log.error("Error processing status update: {}", update, e);
+            log.error("Failed to process update: {}", update, e);
         }
     }
 }

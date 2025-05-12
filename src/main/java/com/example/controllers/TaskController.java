@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.stream.Collectors;
+import com.example.converters.TaskConverter;
 
 @RestController
 @RequestMapping("/tasks")
@@ -14,40 +15,22 @@ import java.util.stream.Collectors;
 public class TaskController {
     private final TaskService taskService;
 
-    private TaskDTO convertToDTO(Task task) {
-        TaskDTO dto = new TaskDTO();
-        dto.setTitle(task.getTitle());
-        dto.setDescription(task.getDescription());
-        dto.setUserId(task.getUserId());
-        dto.setStatus(task.getStatus());
-        return dto;
-    }
-
-    private Task convertToEntity(TaskDTO dto) {
-        Task task = new Task();
-        task.setTitle(dto.getTitle());
-        task.setDescription(dto.getDescription());
-        task.setUserId(dto.getUserId());
-        task.setStatus(dto.getStatus() != null ? dto.getStatus() : "NEW");
-        return task;
-    }
-
     @PostMapping
     public TaskDTO createTask(@RequestBody TaskDTO taskDTO) {
-        Task task = convertToEntity(taskDTO);
-        return convertToDTO(taskService.createTask(task));
+        Task task = TaskConverter.convertToEntity(taskDTO);
+        return TaskConverter.convertToDTO(taskService.createTask(task));
     }
 
     @GetMapping("/{id}")
     public TaskDTO getTaskById(@PathVariable Long id) {
-        return convertToDTO(taskService.getTaskById(id));
+        return TaskConverter.convertToDTO(taskService.getTaskById(id));
     }
 
     @PutMapping("/{id}")
     public TaskDTO updateTask(@PathVariable Long id, @RequestBody TaskDTO taskDTO) {
-        Task task = convertToEntity(taskDTO);
+        Task task = TaskConverter.convertToEntity(taskDTO);
         task.setId(id);
-        return convertToDTO(taskService.updateTask(id, task));
+        return TaskConverter.convertToDTO(taskService.updateTask(id, task));
     }
 
     @DeleteMapping("/{id}")
@@ -59,7 +42,7 @@ public class TaskController {
     public List<TaskDTO> getAllTasks() {
         return taskService.getAllTasks()
                 .stream()
-                .map(this::convertToDTO)
+                .map(TaskConverter::convertToDTO)
                 .collect(Collectors.toList());
     }
 }
