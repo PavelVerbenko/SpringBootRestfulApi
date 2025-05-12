@@ -2,6 +2,7 @@ package com.example.services;
 
 import com.example.dto.TaskStatusUpdateDTO;
 import com.example.models.Task;
+import com.example.models.TaskStatus;
 import com.example.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,23 +30,21 @@ public class TaskService {
 
     public Task updateTask(Long id, Task taskDetails) {
         Task task = getTaskById(id);
-        String oldStatus = task.getStatus() != null ? task.getStatus() : "NEW";
+        TaskStatus oldStatus = task.getStatus();
 
-        boolean statusChanged = !oldStatus.equals(
-                taskDetails.getStatus() != null ? taskDetails.getStatus() : "NEW"
-        );
         task.setTitle(taskDetails.getTitle());
         task.setDescription(taskDetails.getDescription());
         task.setUserId(taskDetails.getUserId());
-        task.setStatus(taskDetails.getStatus() != null ? taskDetails.getStatus() : "NEW");
+        task.setStatus(taskDetails.getStatus() != null ? taskDetails.getStatus() : TaskStatus.NEW);
 
+        boolean statusChanged = !oldStatus.equals(task.getStatus());
         Task savedTask = taskRepository.save(task);
 
         if (statusChanged) {
             TaskStatusUpdateDTO updateDTO = new TaskStatusUpdateDTO();
             updateDTO.setTaskId(id);
-            updateDTO.setOldStatus(oldStatus);
-            updateDTO.setNewStatus(task.getStatus());
+            updateDTO.setOldStatus(oldStatus.name());
+            updateDTO.setNewStatus(task.getStatus().name());
             updateDTO.setUserId(task.getUserId());
 
             try {
