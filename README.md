@@ -23,7 +23,7 @@ Backend: Spring Boot, Spring Data JPA, PostgreSQL
 
 ## Как запускать:
 ## 1 Запускаем Kafka:
-docker-compose up (Kafka + Zookeeper)
+docker-compose up -d(Kafka + Zookeeper)
 
 ## 2 Запустите Spring Boot:
 Запуск Spring Boot приложения в SpringBootRestfulApiApplication или mvn spring-boot:run
