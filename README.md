@@ -3,32 +3,30 @@
 ## Это RESTful API для управления задачами с асинхронной обработкой событий через Apache Kafka. При изменении статуса задачи система автоматически отправляет email-уведомления.
 
 ## Ключевые функции:
-## CRUD для задач (создание, чтение, обновление, удаление)
-## Асинхронные уведомления через Kafka при изменении статуса
-## Email-оповещения (Spring Mail)
-## Логирование операций (Spring AOP)
-## Глобальная обработка ошибок
+CRUD для задач (создание, чтение, обновление, удаление)
+Асинхронные уведомления через Kafka при изменении статуса
+Email-оповещения (Spring Mail)
+Логирование операций (Spring AOP)
+Глобальная обработка ошибок
 
 ## Технологии:
+Backend: Spring Boot, Spring Data JPA, PostgreSQL
+Асинхронность: Kafka (Docker)
+Уведомления: Spring Mail
+Дополнительно: Lombok, AOP
 
-## Backend: Spring Boot, Spring Data JPA, PostgreSQL
-## Асинхронность: Kafka (Docker)
-## Уведомления: Spring Mail
-## Дополнительно: Lombok, AOP
 ## Как работает:
-
-## Пользователь обновляет статус задачи через REST API.
-## Продюсер отправляет событие в Kafka.
-## Консьюмер обрабатывает событие и вызывает NotificationService.
-## На почту приходит уведомление об изменении статуса.
+Пользователь обновляет статус задачи через REST API.
+Продюсер отправляет событие в Kafka.
+Консьюмер обрабатывает событие и вызывает NotificationService.
+На почту приходит уведомление об изменении статуса.
 
 ## Как запускать:
-
 ## 1 Запускаем Kafka:
-## docker-compose up (Kafka + Zookeeper)
+docker-compose up (Kafka + Zookeeper)
 
 ## 2 Запустите Spring Boot:
-## Запуск Spring Boot приложения в SpringBootRestfulApiApplication или mvn spring-boot:run
+Запуск Spring Boot приложения в SpringBootRestfulApiApplication или mvn spring-boot:run
 
 ## Основные компоненты
 
